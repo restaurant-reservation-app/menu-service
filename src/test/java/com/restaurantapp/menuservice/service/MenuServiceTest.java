@@ -133,7 +133,7 @@ public class MenuServiceTest {
         when(menuRepository.getByName("name")).thenReturn(Optional.empty());
 
         var exception = Assertions.assertThrows(IncorrectDataException.class,
-                () -> menuService.updateDish("name", getDishDto("name")));
+                () -> menuService.updateDish(getDishDto("name")));
 
         Assertions.assertEquals("Dish with given name don't exist", exception.getMessage());
     }
@@ -146,7 +146,7 @@ public class MenuServiceTest {
 
         when(menuRepository.getByName(name)).thenReturn(Optional.of(dish));
 
-        DishDto result = menuService.updateDish(name, dishDto);
+        DishDto result = menuService.updateDish(dishDto);
 
         Assertions.assertEquals(dishDto, result);
     }

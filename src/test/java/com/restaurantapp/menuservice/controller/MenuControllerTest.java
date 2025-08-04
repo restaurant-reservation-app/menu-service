@@ -95,7 +95,7 @@ public class MenuControllerTest {
         String name = "name";
         DishDto dishDto = getDish(name);
         String dishJson = getObjectAsString(dishDto);
-        when(menuService.updateDish(name, dishDto)).thenReturn(dishDto);
+        when(menuService.updateDish(dishDto)).thenReturn(dishDto);
 
         MvcResult result = this.mockMvc
                 .perform(MockMvcRequestBuilders.patch("/menu/dish/update/{dishName}", name)

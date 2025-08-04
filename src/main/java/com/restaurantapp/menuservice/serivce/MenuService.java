@@ -41,11 +41,11 @@ public class MenuService {
                 .collect(Collectors.toList());
     }
 
-    public DishDto updateDish(String dishName, DishDto updatedDish) {
-        Dish dish = menuRepository.getByName(dishName)
+    public DishDto updateDish(DishDto updatedDish) {
+        Dish dish = menuRepository.getByName(updatedDish.getName())
                 .orElseThrow(() -> new IncorrectDataException("Dish with given name don't exist"));
         dish.update(menuMapper.toEntity(updatedDish));
-        dish.setName(dishName);
+        dish.setName(updatedDish.getName());
         menuRepository.save(dish);
         return menuMapper.toDto(dish);
     }
