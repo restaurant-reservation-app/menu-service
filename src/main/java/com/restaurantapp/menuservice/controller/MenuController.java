@@ -36,7 +36,7 @@ public class MenuController {
     }
 
     @Operation(summary = "Update dish with given name")
-    @PatchMapping("/dish/update/{dishName}")
+    @PatchMapping("/dish/update")
     public DishDto updateDish(
             @RequestBody DishDto updatedDish) {
         return menuService.updateDish(updatedDish);
