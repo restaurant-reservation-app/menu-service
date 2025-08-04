@@ -35,6 +35,12 @@ public class MenuController {
         return menuService.getMenu(category, dishName);
     }
 
+    @Operation(summary = "Get random dishes from menu with given amount")
+    @GetMapping("/random")
+    public List<DishDto> getRandomDishes(@RequestParam(required = false, defaultValue = "5") int amount) {
+        return menuService.getRandomDishes(amount);
+    }
+
     @Operation(summary = "Update dish with given name")
     @PatchMapping("/dish/update")
     public DishDto updateDish(

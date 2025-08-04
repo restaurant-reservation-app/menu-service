@@ -9,6 +9,7 @@ import com.restaurantapp.menuservice.repository.MenuRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -39,6 +40,14 @@ public class MenuService {
                 .filter(dishList::contains)
                 .map(menuMapper::toDto)
                 .collect(Collectors.toList());
+    }
+
+    public List<DishDto> getRandomDishes(int amount) {
+        List<Dish> dishList = menuRepository.findAll();
+        Collections.shuffle(dishList);
+        return dishList.subList(0, Math.min(amount, dishList.size())).stream()
+                .map(menuMapper::toDto)
+                .toList();
     }
 
     public DishDto updateDish(DishDto updatedDish) {
