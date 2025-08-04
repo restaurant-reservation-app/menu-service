@@ -21,7 +21,7 @@ public class Dish {
     @Column(name = "PRICE")
     private BigDecimal price;
     @Column(name = "PHOTO")
-    private byte[] photo;
+    private String photo;
 
     public void update(Dish dish) {
         if(dish.getName() != null) {
