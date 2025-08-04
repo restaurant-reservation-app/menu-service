@@ -5,6 +5,7 @@ import com.restaurantapp.menuservice.serivce.MenuService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -17,6 +18,7 @@ public class MenuController {
 
     @Operation(summary = "Create new dish in menu with unique dish name")
     @PostMapping("/dish/add")
+    @ResponseStatus(HttpStatus.CREATED)
     public DishDto addDish(@RequestBody DishDto dishDto) {
         return menuService.addDish(dishDto);
     }
@@ -43,6 +45,7 @@ public class MenuController {
 
     @Operation(summary = "Delete dish with given name")
     @DeleteMapping("/dish/delete/{dishName}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteDish(@PathVariable String dishName) {
         menuService.deleteDish(dishName);
     }

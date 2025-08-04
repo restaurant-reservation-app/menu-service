@@ -47,6 +47,7 @@ public class MenuService {
             throw new IncorrectDataException("Dish with given name don't exist");
         }
         dish.update(menuMapper.toEntity(updatedDish));
+        dish.setName(dishName);
         menuRepository.save(dish);
         return menuMapper.toDto(dish);
     }
