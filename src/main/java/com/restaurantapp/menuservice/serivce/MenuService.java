@@ -19,7 +19,7 @@ public class MenuService {
     private final MenuRepository menuRepository;
 
     public DishDto addDish(DishDto dishDto) {
-        if(menuRepository.getByName(dishDto.getName()) == null) {
+        if (menuRepository.getByName(dishDto.getName()).isPresent()) {
             throw new IncorrectDataException("Dish with given name already exist");
         }
         Dish dish = menuMapper.toEntity(dishDto);
@@ -32,7 +32,7 @@ public class MenuService {
                 ? menuRepository.getByCategory(category)
                 : menuRepository.findAll();
         List<Dish> dishList = (dishName != null && !dishName.isBlank())
-                ? List.of(menuRepository.getByName(dishName))
+                ? menuRepository.getByName(dishName).map(List::of).orElseGet(List::of)
                 : menuRepository.findAll();
 
         return categoryList.stream()
@@ -42,10 +42,8 @@ public class MenuService {
     }
 
     public DishDto updateDish(String dishName, DishDto updatedDish) {
-        Dish dish = menuRepository.getByName(dishName);
-        if(dish == null) {
-            throw new IncorrectDataException("Dish with given name don't exist");
-        }
+        Dish dish = menuRepository.getByName(dishName)
+                .orElseThrow(() -> new IncorrectDataException("Dish with given name don't exist"));
         dish.update(menuMapper.toEntity(updatedDish));
         dish.setName(dishName);
         menuRepository.save(dish);
@@ -53,10 +51,8 @@ public class MenuService {
     }
 
     public void deleteDish(String dishName) {
-        Dish dish = menuRepository.getByName(dishName);
-        if(dish == null || dish.equals(new Dish())) {
-            throw new NotFoundException("Dish with given name don't exist");
-        }
+        Dish dish = menuRepository.getByName(dishName)
+                .orElseThrow(() -> new NotFoundException("Dish with given name don't exist"));
         menuRepository.delete(dish);
     }
 }

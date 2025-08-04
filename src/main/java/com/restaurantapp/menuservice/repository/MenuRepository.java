@@ -5,13 +5,14 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface MenuRepository extends JpaRepository<Dish, Long> {
     @Query(
             value = "SELECT * FROM DISH d WHERE d.name = ?1",
             nativeQuery = true
     )
-    Dish getByName(String name);
+    Optional<Dish> getByName(String name);
     @Query(
             value = "SELECT * FROM DISH d WHERE d.category = ?1",
             nativeQuery = true
