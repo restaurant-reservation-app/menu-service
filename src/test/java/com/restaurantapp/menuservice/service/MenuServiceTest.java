@@ -15,6 +15,8 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.mapstruct.factory.Mappers;
 import org.mockito.Mockito;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ActiveProfiles;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -23,6 +25,8 @@ import java.util.stream.Stream;
 
 import static org.mockito.Mockito.*;
 
+@ActiveProfiles("test")
+@SpringBootTest
 public class MenuServiceTest {
     private MenuService menuService;
     private MenuRepository menuRepository;
