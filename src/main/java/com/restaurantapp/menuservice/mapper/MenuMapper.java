@@ -12,9 +12,11 @@ import java.util.Base64;
 public interface MenuMapper {
 
     @Mapping(target = "photo", source = "photoBase64", qualifiedByName = "stringToBytes")
+    @Mapping(target = "category.name", source = "category")
     Dish toEntity(DishDto dto);
 
     @Mapping(target = "photoBase64", source = "photo", qualifiedByName = "bytesToString")
+    @Mapping(target = "category", source = "category.name")
     DishDto toDto(Dish entity);
 
     @Named("stringToBytes")

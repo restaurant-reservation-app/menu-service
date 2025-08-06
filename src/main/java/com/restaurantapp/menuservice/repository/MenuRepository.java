@@ -13,9 +13,11 @@ public interface MenuRepository extends JpaRepository<Dish, Long> {
             nativeQuery = true
     )
     Optional<Dish> getByName(String name);
-    @Query(
-            value = "SELECT * FROM DISH d WHERE d.category = ?1",
-            nativeQuery = true
-    )
+
+    @Query(value = """
+            SELECT d.* FROM DISH d
+            JOIN CATEGORY c ON d.category_id = c.id
+            WHERE c.name = ?1
+            """, nativeQuery = true)
     List<Dish> getByCategory(String name);
 }

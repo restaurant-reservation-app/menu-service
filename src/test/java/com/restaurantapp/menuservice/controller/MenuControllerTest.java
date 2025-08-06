@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
 import com.restaurantapp.menuservice.model.dto.DishDto;
+import com.restaurantapp.menuservice.serivce.CategoryService;
 import com.restaurantapp.menuservice.serivce.MenuService;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -30,6 +31,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 public class MenuControllerTest {
     @MockitoBean
     MenuService menuService;
+    @MockitoBean
+    CategoryService categoryService;
     @Autowired
     MockMvc mockMvc;
     @Autowired
@@ -90,6 +93,69 @@ public class MenuControllerTest {
                 .andReturn();
 
         Assertions.assertEquals(dishJson, result.getResponse().getContentAsString());
+    }
+
+    @Test
+    void getRandomDishes_CorrectData_WithoutParam_DtoListReturned() throws Exception {
+        List<DishDto> dishDtoList = List.of(
+                getDish("name1"),
+                getDish("name2"),
+                getDish("name3"),
+                getDish("name4"),
+                getDish("name5")
+        );
+
+        String dishJson = getObjectAsString(dishDtoList);
+        when(menuService.getRandomDishes(5)).thenReturn(dishDtoList);
+
+        MvcResult result = this.mockMvc
+                .perform(MockMvcRequestBuilders.get("/menu/random"))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andReturn();
+
+        Assertions.assertEquals(dishJson, result.getResponse().getContentAsString());
+    }
+
+    @Test
+    void getRandomDishes_CorrectData_WithParam_DtoListReturned() throws Exception {
+        List<DishDto> dishDtoList = List.of(
+                getDish("name1"),
+                getDish("name2"),
+                getDish("name3"),
+                getDish("name4")
+        );
+
+        String dishJson = getObjectAsString(dishDtoList);
+        when(menuService.getRandomDishes(4)).thenReturn(dishDtoList);
+
+        MvcResult result = this.mockMvc
+                .perform(MockMvcRequestBuilders.get("/menu/random")
+                        .param("amount","4"))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andReturn();
+
+        Assertions.assertEquals(dishJson, result.getResponse().getContentAsString());
+    }
+    @Test
+    void getAllCategories_CorrectData_DtoListReturned() throws Exception {
+        List<String> categoryList = List.of(
+                "name1",
+                "name2",
+                "name3",
+                "name4"
+        );
+        String categoryJson = getObjectAsString(categoryList);
+        when(categoryService.getCategories()).thenReturn(categoryList);
+
+        MvcResult result = this.mockMvc
+                .perform(MockMvcRequestBuilders.get("/menu/category"))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andReturn();
+
+        Assertions.assertEquals(categoryJson, result.getResponse().getContentAsString());
     }
 
     @Test

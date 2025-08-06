@@ -4,8 +4,10 @@ import com.restaurantapp.menuservice.exception.IncorrectDataException;
 import com.restaurantapp.menuservice.exception.NotFoundException;
 import com.restaurantapp.menuservice.mapper.MenuMapper;
 import com.restaurantapp.menuservice.model.dto.DishDto;
+import com.restaurantapp.menuservice.model.entity.Category;
 import com.restaurantapp.menuservice.model.entity.Dish;
 import com.restaurantapp.menuservice.repository.MenuRepository;
+import com.restaurantapp.menuservice.serivce.CategoryService;
 import com.restaurantapp.menuservice.serivce.MenuService;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -13,12 +15,15 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.mapstruct.factory.Mappers;
 import org.mockito.Mockito;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Stream;
@@ -28,6 +33,8 @@ import static org.mockito.Mockito.*;
 @ActiveProfiles("test")
 @SpringBootTest
 public class MenuServiceTest {
+    @Autowired
+    private CategoryService categoryService;
     private MenuService menuService;
     private MenuRepository menuRepository;
 
@@ -35,7 +42,7 @@ public class MenuServiceTest {
     void setUp() {
         this.menuRepository = Mockito.mock(MenuRepository.class);
         MenuMapper menuMapper = Mappers.getMapper(MenuMapper.class);
-        menuService = new MenuService(menuMapper, menuRepository);
+        menuService = new MenuService(menuMapper, menuRepository, categoryService);
     }
 
     @ParameterizedTest
@@ -110,6 +117,54 @@ public class MenuServiceTest {
         );
     }
 
+    @ParameterizedTest
+    @MethodSource
+    void getRandomDishesTest_CorrectData(int amount, List<Dish> databaseReturn) {
+        when(menuRepository.findAll()).thenReturn(databaseReturn);
+
+        List<DishDto> result = menuService.getRandomDishes(amount);
+
+        Assertions.assertEquals(Math.min(databaseReturn.size(), amount), result.size());
+    }
+
+    private static Stream<Arguments> getRandomDishesTest_CorrectData() {
+        List<Dish> database1 = new ArrayList<>();
+        database1.add(getDish("name1"));
+        List<Dish> database2 = new ArrayList<>();
+        database2.add(getDish("name1"));
+        database2.add(getDish("name2"));
+        database2.add(getDish("name3"));
+        List<Dish> database3 = new ArrayList<>();
+        database3.add(getDish("name1"));
+        database3.add(getDish("name2"));
+        database3.add(getDish("name3"));
+        database3.add(getDish("name4"));
+        database3.add(getDish("name5"));
+        database3.add(getDish("name6"));
+        return Stream.of(
+                Arguments.of(1, List.of()),
+                Arguments.of(1, database1),
+                Arguments.of(1, database2),
+                Arguments.of(1, database3),
+                Arguments.of(3, List.of()),
+                Arguments.of(3, database1),
+                Arguments.of(3, database2),
+                Arguments.of(3, database3),
+                Arguments.of(5, List.of()),
+                Arguments.of(5, database1),
+                Arguments.of(5, database2),
+                Arguments.of(5, database3)
+        );
+    }
+
+    @ParameterizedTest
+    @ValueSource(ints = {-100, -1, 0})
+    void getRandomDishesTest_IncorrectData(int amount) {
+        var exception = Assertions.assertThrows(IncorrectDataException.class,
+                () -> menuService.getRandomDishes(amount));
+
+        Assertions.assertEquals("Incorrect dish amount", exception.getMessage());
+    }
     @Test
     void addDish_CorrectData_DtoReturned() {
         DishDto dishDto = getDishDto("name");
@@ -179,7 +234,10 @@ public class MenuServiceTest {
         Dish dish = new Dish();
         dish.setName(name);
         dish.setDescription("description");
-        dish.setCategory("category");
+        dish.setCategory(new Category());
+        dish.getCategory().setName("category");
+        dish.getCategory().setId(1L);
+        dish.getCategory().setSequence(1);
         dish.setPrice(new BigDecimal("12.5"));
         return dish;
     }

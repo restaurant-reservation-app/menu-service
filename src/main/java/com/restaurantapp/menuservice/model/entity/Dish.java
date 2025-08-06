@@ -16,8 +16,9 @@ public class Dish {
     private String name;
     @Column(name = "DESCRIPTION")
     private String description;
-    @Column(name = "CATEGORY")
-    private String category;
+    @ManyToOne
+    @JoinColumn(name = "category_id")
+    private Category category;
     @Column(name = "PRICE")
     private BigDecimal price;
     @Column(name = "PHOTO")
